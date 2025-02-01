@@ -18,6 +18,10 @@ type Config struct {
 	Password string `envconfig:"PASSWORD" default:"demo_password"`
 }
 
+type Store struct {
+	*pgxpool.Pool
+}
+
 // getPsqlDsn generates a PostgreSQL connection string
 // based on the provided database configuration.
 //
@@ -35,7 +39,7 @@ func getPsqlDsn(cfg Config) string {
 }
 
 // NewPostgresPool creates a configuration database pool.
-func NewPostgresPool(ctx context.Context, cfg Config) (*pgxpool.Pool, error) {
+func NewPostgresPool(ctx context.Context, cfg Config) (*Store, error) {
 	poolCfg, err := pgxpool.ParseConfig(getPsqlDsn(cfg))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse DSN: %w", err)
@@ -58,5 +62,5 @@ func NewPostgresPool(ctx context.Context, cfg Config) (*pgxpool.Pool, error) {
 	}
 
 	slog.Info("Connected to DataBase (using pool) successfully!")
-	return pool, nil
+	return &Store{pool}, nil
 }
