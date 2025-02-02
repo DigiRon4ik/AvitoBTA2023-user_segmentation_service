@@ -63,7 +63,7 @@ func gracefulShutdown(ctxCancel context.CancelFunc) {
 		storage.Close()
 	}
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	slog.Info("Application Stopped!")
 	close(signalChan)
 }
