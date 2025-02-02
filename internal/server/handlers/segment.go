@@ -27,22 +27,22 @@ func NewSegmentHandlers(ctx context.Context, ss segmentService) *SegmentHandlers
 	}
 }
 
-func (uh *SegmentHandlers) CreateHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (uh *SegmentHandlers) DeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *SegmentHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (uh *SegmentHandlers) UpdateHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (uh *SegmentHandlers) GetHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (uh *SegmentHandlers) GetAllHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *SegmentHandlers) GetAllHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }

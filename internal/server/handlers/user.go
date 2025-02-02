@@ -27,22 +27,22 @@ func NewUserHandlers(ctx context.Context, us userService) *UserHandlers {
 	}
 }
 
-func (uh *UserHandlers) CreateHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (uh *UserHandlers) DeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (uh *UserHandlers) UpdateHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (uh *UserHandlers) GetHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (uh *UserHandlers) GetAllHandler(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandlers) GetAllHandle(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
