@@ -3,9 +3,12 @@ package server
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"user_segmentation_service/internal/models"
 )
+
+var server *http.Server
 
 type Config struct {
 	Host string `envconfig:"HOST" default:"localhost"`
@@ -30,13 +33,13 @@ type segmentService interface {
 
 type APIServer struct {
 	router *http.ServeMux
-	cfg    *Config
+	cfg    Config
 	ctx    context.Context
 	us     userService
 	ss     segmentService
 }
 
-func New(ctx context.Context, cfg *Config, us userService, ss segmentService) *APIServer {
+func New(ctx context.Context, cfg Config, us userService, ss segmentService) *APIServer {
 	router := http.NewServeMux()
 
 	return &APIServer{
@@ -46,4 +49,20 @@ func New(ctx context.Context, cfg *Config, us userService, ss segmentService) *A
 		us:     us,
 		ss:     ss,
 	}
+}
+
+func (api *APIServer) Start() error {
+	api.configureRouter()
+	server := &http.Server{
+		Addr:         api.cfg.Host + ":" + api.cfg.Port,
+		Handler:      api.router,
+		ReadTimeout:  time.Second * 30, // Request read timeout
+		WriteTimeout: time.Second * 10, // Response Record Timeout
+		IdleTimeout:  time.Second * 60, // Keep-alive connections timeout
+	}
+	return server.ListenAndServe()
+}
+
+func (api *APIServer) Shutdown() error {
+	return server.Shutdown(api.ctx)
 }
