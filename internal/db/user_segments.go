@@ -54,10 +54,10 @@ const (
 		FROM inserted_segments;`
 )
 
-// segmentModification describes the data for adding a segment to a user.
-type segmentModification struct {
-	Slug           string     // segment slug
-	ExpirationTime *time.Time // Optionally, if nil, the default value is used
+// SegmentModification describes the data for adding a segment to a user.
+type SegmentModification struct {
+	Slug           string     `json:"slug"`                      // segment slug
+	ExpirationTime *time.Time `json:"expiration_time,omitempty"` // Optionally, if nil, the default value is used
 }
 
 // defaultExpiration specifies a default expiration time of 100 years from the current point in time.
@@ -68,7 +68,7 @@ func defaultExpiration() time.Time {
 // UpdateUserSegments updates user segments (transaction): adds and deletes segments.
 // For each added segment, a record is inserted into the user_segments table and recorded in the history.
 // For each segment to be deleted, the connection is deleted and the deletion is recorded in the history.
-func (s *Store) UpdateUserSegments(ctx context.Context, userID int, add []segmentModification, remove []string) error {
+func (s *Store) UpdateUserSegments(ctx context.Context, userID int, add []SegmentModification, remove []string) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("the beginning of the transaction: %w", err)
