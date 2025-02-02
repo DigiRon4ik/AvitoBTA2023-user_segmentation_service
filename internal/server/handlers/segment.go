@@ -44,11 +44,11 @@ func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	if err = json.NewEncoder(w).Encode(segment); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
 }
 
 func (sh *SegmentHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
@@ -83,11 +83,11 @@ func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(segment); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
@@ -103,11 +103,11 @@ func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(segment); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (sh *SegmentHandlers) GetAllHandle(w http.ResponseWriter, r *http.Request) {
@@ -121,9 +121,9 @@ func (sh *SegmentHandlers) GetAllHandle(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(segments); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
