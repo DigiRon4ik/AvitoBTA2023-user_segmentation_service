@@ -124,16 +124,16 @@ func (uh *UserHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 
 func (uh *UserHandlers) GetAllHandle(w http.ResponseWriter, r *http.Request) {
 	var (
-		err  error
-		user []*models.User
+		err   error
+		users []*models.User
 	)
 
-	if user, err = uh.users.GetAll(uh.ctx); err != nil {
+	if users, err = uh.users.GetAll(uh.ctx); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(user); err != nil {
+	if err = json.NewEncoder(w).Encode(users); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
