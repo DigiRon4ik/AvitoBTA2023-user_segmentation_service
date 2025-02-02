@@ -35,7 +35,7 @@ func (uh *UserHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 		user *models.User
 	)
 
-	if err = json.NewDecoder(r.Body).Decode(user); err != nil {
+	if err = json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -82,7 +82,7 @@ func (uh *UserHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err = json.NewDecoder(r.Body).Decode(user); err != nil {
+	if err = json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

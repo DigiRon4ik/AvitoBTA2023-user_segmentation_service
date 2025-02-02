@@ -34,7 +34,7 @@ func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) 
 		segment *models.Segment
 	)
 
-	if err = json.NewDecoder(r.Body).Decode(segment); err != nil {
+	if err = json.NewDecoder(r.Body).Decode(&segment); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -73,13 +73,17 @@ func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) 
 		segment *models.Segment
 	)
 
-	if err = json.NewDecoder(r.Body).Decode(segment); err != nil {
+	if err = json.NewDecoder(r.Body).Decode(&segment); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	segment.Slug = slug
-	w.Header().Set("Content-Type", "application/json")
 	if err = sh.segments.Update(sh.ctx, segment); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(segment); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
