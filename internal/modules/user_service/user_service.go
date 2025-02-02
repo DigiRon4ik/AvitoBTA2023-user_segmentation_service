@@ -22,22 +22,16 @@ func NewUserService(store DB) *UserService {
 	return &UserService{store: store}
 }
 
-func (s *UserService) Create(ctx context.Context, user *models.User) (*models.User, error) {
-	if err := s.store.CreateUser(ctx, user); err != nil {
-		return nil, err
-	}
-	return user, nil
+func (s *UserService) Create(ctx context.Context, user *models.User) error {
+	return s.store.CreateUser(ctx, user)
 }
 
 func (s *UserService) Delete(ctx context.Context, userID int) error {
 	return s.store.DeleteUser(ctx, userID)
 }
 
-func (s *UserService) Update(ctx context.Context, user *models.User) (*models.User, error) {
-	if err := s.store.UpdateUser(ctx, user); err != nil {
-		return nil, err
-	}
-	return user, nil
+func (s *UserService) Update(ctx context.Context, user *models.User) error {
+	return s.store.UpdateUser(ctx, user)
 }
 
 func (s *UserService) GetByID(ctx context.Context, userID int) (*models.User, error) {

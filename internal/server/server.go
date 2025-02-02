@@ -16,9 +16,9 @@ type Config struct {
 }
 
 type userService interface {
-	Create(ctx context.Context, user *models.User) (*models.User, error)
+	Create(ctx context.Context, user *models.User) error
 	Delete(ctx context.Context, userID int) error
-	Update(ctx context.Context, user *models.User) (*models.User, error)
+	Update(ctx context.Context, user *models.User) error
 	GetByID(ctx context.Context, userID int) (*models.User, error)
 	GetAll(ctx context.Context) ([]*models.User, error)
 }
