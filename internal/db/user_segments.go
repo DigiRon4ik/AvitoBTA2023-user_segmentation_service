@@ -14,6 +14,44 @@ const (
 		FROM segments s
 		JOIN user_segments us ON s.id = us.segment_id
 		WHERE us.user_id = $1 AND us.expiration_time > NOW()`
+	// Удаляет записи из user_segments для заданного user_id и списка slug'ов,
+	// возвращая удалённые данные (user_id, segment_id, created_at).
+	// Затем сразу же записывает эти данные в user_segments_history с пометкой 'REMOVE'.
+	// Используем CTE (WITH deleted_segments) для объединения удаления и логирования в один запрос.
+	removingSegmentsForUser = `
+		WITH deleted_segments AS (
+            DELETE FROM user_segments
+            WHERE user_id = $1
+				AND segment_id IN (SELECT id
+									FROM segments
+									WHERE slug = ANY ($2))
+            RETURNING user_id, segment_id, created_at)
+		INSERT INTO user_segments_history (user_id, segment_id, action, created_at)
+		SELECT user_id, segment_id, 'REMOVE', created_at
+		FROM deleted_segments;`
+	// Массовое добавление или обновление записей в user_segments с записью в историю.
+	// 1. Преобразуем массивы slug и expiration_time в таблицу (segments_data).
+	// 2. Находим segment_id по slug'ам (segment_ids).
+	// 3. Вставляем новые или обновляем существующие записи в user_segments (inserted_segments).
+	// 4. Фиксируем успешные операции в user_segments_history.
+	addingSegmentsForUser = `
+		WITH segments_data AS (SELECT UNNEST($1::TEXT[]) AS slug,
+									UNNEST($2::TIMESTAMP[]) AS expiration_time),
+			segment_ids AS (SELECT sd.slug,
+								sd.expiration_time,
+								s.id AS segment_id
+							FROM segments_data sd
+								JOIN segments s ON sd.slug = s.slug),
+			inserted_segments AS (
+				INSERT INTO user_segments (user_id, segment_id, expiration_time)
+				SELECT $3 AS user_id, si.segment_id, si.expiration_time
+				FROM segment_ids si
+				ON CONFLICT (user_id, segment_id)
+				DO UPDATE SET expiration_time = excluded.expiration_time
+                RETURNING user_id, segment_id, created_at)
+		INSERT INTO user_segments_history (user_id, segment_id, action, created_at)
+		SELECT user_id, segment_id, 'ADD' AS action, created_at
+		FROM inserted_segments;`
 )
 
 // segmentModification describes the data for adding a segment to a user.
@@ -43,71 +81,34 @@ func (s *Store) UpdateUserSegments(ctx context.Context, userID int, add []segmen
 		}
 	}()
 
+	// TODO: add the use of batch requests or COPY FROM if len(remove/add) > 10k+
 	// Removing segments
-	for _, slug := range remove {
-		// Get segment id by slug
-		var segmentID int
-		err = tx.QueryRow(ctx, `SELECT id FROM segments WHERE slug = $1`, slug).Scan(&segmentID)
-		if err != nil {
-			return fmt.Errorf("no segment found with slug %s: %w", slug, err)
-		}
-
-		// Deleting the link
-		_, err = tx.Exec(ctx, `
-			DELETE FROM user_segments
-			WHERE user_id = $1 AND segment_id = $2
-		`, userID, segmentID)
-		if err != nil {
-			return fmt.Errorf("delete segment %s for user %d: %w", slug, userID, err)
-		}
-
-		// Record the operation in the history
-		_, err = tx.Exec(ctx, `
-			INSERT INTO user_segments_history (user_id, segment_id, action)
-			VALUES ($1, $2, 'REMOVE')
-		`, userID, segmentID)
-		if err != nil {
-			return fmt.Errorf("recording the history of deletion of segment %s: %w", slug, err)
-		}
+	_, err = tx.Exec(ctx, removingSegmentsForUser, userID, remove)
+	if err != nil {
+		return fmt.Errorf("error delete segments for user %d: %w", userID, err)
 	}
 
 	// Adding segments
-	for _, mod := range add {
-		// Get segment id by slug
-		var segmentID int
-		err = tx.QueryRow(ctx, `SELECT id FROM segments WHERE slug = $1`, mod.Slug).Scan(&segmentID)
-		if err != nil {
-			return fmt.Errorf("no segment found with slug %s: %w", mod.Slug, err)
-		}
-
-		// If expiration_time is not specified, we use the default value.
-		expTime := mod.ExpirationTime
-		if expTime == nil {
+	if len(add) == 0 {
+		return nil
+	}
+	// Data preparation for request
+	slugs := make([]string, len(add))
+	expTimes := make([]*time.Time, len(add))
+	for i, mod := range add {
+		slugs[i] = mod.Slug
+		if mod.ExpirationTime == nil {
 			defaultExp := defaultExpiration()
-			expTime = &defaultExp
-		}
-
-		// Insert or update a link in the user_segments table.
-		// If the record already exists, you can update expiration_time.
-		_, err = tx.Exec(ctx, `
-			INSERT INTO user_segments (user_id, segment_id, expiration_time)
-			VALUES ($1, $2, $3)
-			ON CONFLICT (user_id, segment_id) DO UPDATE SET expiration_time = excluded.expiration_time
-		`, userID, segmentID, *expTime)
-		if err != nil {
-			return fmt.Errorf("adding segment %s for user %d: %w", mod.Slug, userID, err)
-		}
-
-		// Record the operation in the history
-		_, err = tx.Exec(ctx, `
-			INSERT INTO user_segments_history (user_id, segment_id, action)
-			VALUES ($1, $2, 'ADD')
-		`, userID, segmentID)
-		if err != nil {
-			return fmt.Errorf("recording the history of adding segment %s: %w", mod.Slug, err)
+			expTimes[i] = &defaultExp
+		} else {
+			expTimes[i] = mod.ExpirationTime
 		}
 	}
-
+	// Request
+	_, err = tx.Exec(ctx, addingSegmentsForUser, userID, slugs, expTimes)
+	if err != nil {
+		return fmt.Errorf("error adding segments for user %d: %w", userID, err)
+	}
 	return nil
 }
 
