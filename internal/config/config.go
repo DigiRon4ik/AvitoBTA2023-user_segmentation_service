@@ -7,12 +7,14 @@ import (
 
 	"user_segmentation_service/internal/db"
 	"user_segmentation_service/internal/logger"
+	"user_segmentation_service/internal/server"
 )
 
 // Config holds the entire application configuration.
 type Config struct {
-	Log logger.Config `envconfig:"LOG" required:"true"`
-	DB  db.Config     `envconfig:"DB" required:"true"`
+	Log       logger.Config `envconfig:"LOG" required:"true"`
+	DB        db.Config     `envconfig:"DB" required:"true"`
+	APIServer server.Config `envconfig:"HTTP" required:"true"`
 }
 
 // MustLoad is a function that loads environment variables from a `.env` file and
