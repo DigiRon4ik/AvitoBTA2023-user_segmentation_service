@@ -22,25 +22,19 @@ func NewSegmentService(store DB) *SegmentService {
 	return &SegmentService{store: store}
 }
 
-func (s *SegmentService) Create(ctx context.Context, seg *models.Segment) (*models.Segment, error) {
-	if err := s.store.CreateSegment(ctx, seg); err != nil {
-		return nil, err
-	}
-	return seg, nil
+func (s *SegmentService) Create(ctx context.Context, seg *models.Segment) error {
+	return s.store.CreateSegment(ctx, seg)
 }
 
 func (s *SegmentService) Delete(ctx context.Context, slug string) error {
 	return s.store.DeleteSegment(ctx, slug)
 }
 
-func (s *SegmentService) Update(ctx context.Context, seg *models.Segment) (*models.Segment, error) {
-	if err := s.store.UpdateSegment(ctx, seg); err != nil {
-		return nil, err
-	}
-	return seg, nil
+func (s *SegmentService) Update(ctx context.Context, seg *models.Segment) error {
+	return s.store.UpdateSegment(ctx, seg)
 }
 
-func (s *SegmentService) GetByID(ctx context.Context, slug string) (*models.Segment, error) {
+func (s *SegmentService) GetBySlug(ctx context.Context, slug string) (*models.Segment, error) {
 	return s.store.GetSegmentBySlug(ctx, slug)
 }
 
