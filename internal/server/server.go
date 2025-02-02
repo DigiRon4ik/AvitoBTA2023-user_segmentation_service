@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"user_segmentation_service/internal/models"
+	"user_segmentation_service/internal/server/middlewares"
 )
 
 type Config struct {
@@ -53,7 +54,7 @@ func (api *APIServer) Start() error {
 	api.configureRouter()
 	server := &http.Server{
 		Addr:         api.cfg.Host + ":" + api.cfg.Port,
-		Handler:      api.router,
+		Handler:      middlewares.NewMiddleware(api.router),
 		ReadTimeout:  time.Second * 30, // Request read timeout
 		WriteTimeout: time.Second * 10, // Response Record Timeout
 		IdleTimeout:  time.Second * 60, // Keep-alive connections timeout
