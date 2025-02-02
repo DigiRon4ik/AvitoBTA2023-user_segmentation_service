@@ -10,9 +10,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"user_segment_service/internal/config"
-	"user_segment_service/internal/db"
-	"user_segment_service/internal/logger"
+	"user_segmentation_service/internal/config"
+	"user_segmentation_service/internal/db"
+	"user_segmentation_service/internal/logger"
 )
 
 var (
@@ -50,7 +50,6 @@ func gracefulShutdown(ctxCancel context.CancelFunc) {
 
 	if storage != nil {
 		storage.Close()
-		slog.Debug("DataBase connection closed!")
 	}
 
 	time.Sleep(2 * time.Second)

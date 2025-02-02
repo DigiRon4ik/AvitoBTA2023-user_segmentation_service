@@ -19,7 +19,7 @@ type Config struct {
 }
 
 type Store struct {
-	*pgxpool.Pool
+	pool *pgxpool.Pool
 }
 
 // getPsqlDsn generates a PostgreSQL connection string
@@ -63,4 +63,12 @@ func NewPostgresPool(ctx context.Context, cfg Config) (*Store, error) {
 
 	slog.Info("Connected to DataBase (using pool) successfully!")
 	return &Store{pool}, nil
+}
+
+// Close closes the database connection pool if it's open, logging the closure.
+func (s *Store) Close() {
+	if s.pool != nil {
+		s.pool.Close()
+		slog.Debug("DataBase connection closed!")
+	}
 }
