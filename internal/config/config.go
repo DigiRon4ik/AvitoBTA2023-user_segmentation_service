@@ -5,8 +5,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
-	"user_segment_service/internal/db"
-	"user_segment_service/internal/logger"
+	"user_segmentation_service/internal/db"
+	"user_segmentation_service/internal/logger"
 )
 
 // Config holds the entire application configuration.
