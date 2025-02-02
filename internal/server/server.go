@@ -24,10 +24,10 @@ type userService interface {
 }
 
 type segmentService interface {
-	Create(ctx context.Context, seg *models.Segment) (*models.Segment, error)
+	Create(ctx context.Context, seg *models.Segment) error
 	Delete(ctx context.Context, slug string) error
-	Update(ctx context.Context, seg *models.Segment) (*models.Segment, error)
-	GetByID(ctx context.Context, slug string) (*models.Segment, error)
+	Update(ctx context.Context, seg *models.Segment) error
+	GetBySlug(ctx context.Context, slug string) (*models.Segment, error)
 	GetAll(ctx context.Context) ([]*models.Segment, error)
 }
 
