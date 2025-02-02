@@ -20,14 +20,23 @@ type userService interface {
 	GetAll(ctx context.Context) ([]*models.User, error)
 }
 
+type segmentService interface {
+	Create(ctx context.Context, seg *models.Segment) (*models.Segment, error)
+	Delete(ctx context.Context, slug string) error
+	Update(ctx context.Context, seg *models.Segment) (*models.Segment, error)
+	GetByID(ctx context.Context, slug string) (*models.Segment, error)
+	GetAll(ctx context.Context) ([]*models.Segment, error)
+}
+
 type APIServer struct {
 	router *http.ServeMux
 	cfg    *Config
 	ctx    context.Context
 	us     userService
+	ss     segmentService
 }
 
-func New(ctx context.Context, cfg *Config, us userService) *APIServer {
+func New(ctx context.Context, cfg *Config, us userService, ss segmentService) *APIServer {
 	router := http.NewServeMux()
 
 	return &APIServer{
@@ -35,5 +44,6 @@ func New(ctx context.Context, cfg *Config, us userService) *APIServer {
 		cfg:    cfg,
 		ctx:    ctx,
 		us:     us,
+		ss:     ss,
 	}
 }
