@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS segments
 
 CREATE TABLE IF NOT EXISTS user_segments
 (
-    user_id         INT       NOT NULL,
-    segment_id      INT       NOT NULL,
+    user_id         INT NOT NULL,
+    segment_id      INT NOT NULL,
     expiration_time TIMESTAMP,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, segment_id),
