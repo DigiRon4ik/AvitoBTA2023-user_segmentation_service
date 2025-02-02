@@ -17,11 +17,13 @@ type userService interface {
 
 type UserHandlers struct {
 	users userService
+	ctx   context.Context
 }
 
-func NewUserHandlers(us userService) *UserHandlers {
+func NewUserHandlers(ctx context.Context, us userService) *UserHandlers {
 	return &UserHandlers{
 		users: us,
+		ctx:   ctx,
 	}
 }
 

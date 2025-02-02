@@ -17,11 +17,13 @@ type segmentService interface {
 
 type SegmentHandlers struct {
 	segments segmentService
+	ctx      context.Context
 }
 
-func NewSegmentHandlers(ss segmentService) *SegmentHandlers {
+func NewSegmentHandlers(ctx context.Context, ss segmentService) *SegmentHandlers {
 	return &SegmentHandlers{
 		segments: ss,
+		ctx:      ctx,
 	}
 }
 
