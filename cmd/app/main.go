@@ -20,6 +20,7 @@ import (
 
 var (
 	storage *pgxpool.Pool
+	serv    *server.APIServer
 )
 
 // main - entry point.
