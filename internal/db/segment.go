@@ -11,7 +11,7 @@ import (
 const (
 	createSegment    = `INSERT INTO segments (slug, description) VALUES ($1, $2) RETURNING id, created_at;`
 	deleteSegment    = `DELETE FROM segments WHERE slug = $1;`
-	updateSegment    = `UPDATE segments SET description = $1 WHERE slug = $2;`
+	updateSegment    = `UPDATE segments SET description = $1 WHERE slug = $2 RETURNING id, created_at;`
 	getSegmentBySlug = `SELECT id, slug, description, created_at FROM segments WHERE slug = $1;`
 	getAllSegments   = `SELECT * FROM segments;`
 )
@@ -30,9 +30,8 @@ func (s *Store) DeleteSegment(ctx context.Context, slug string) error {
 
 // UpdateSegment changes the segment data (e.g., description) by slug.
 // Here only the description field is updated, but others can be added if necessary.
-func (s *Store) UpdateSegment(ctx context.Context, slug, description string) error {
-	_, err := s.pool.Exec(ctx, updateSegment, description, slug)
-	return err
+func (s *Store) UpdateSegment(ctx context.Context, seg *models.Segment) error {
+	return s.pool.QueryRow(ctx, updateSegment, seg.Description, seg.Slug).Scan(&seg.ID, &seg.CreatedAt)
 }
 
 // GetSegmentBySlug gets the segment by slug.
