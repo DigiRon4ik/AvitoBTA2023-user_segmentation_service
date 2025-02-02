@@ -13,10 +13,14 @@ import (
 	"user_segmentation_service/internal/config"
 	"user_segmentation_service/internal/db"
 	"user_segmentation_service/internal/logger"
+	"user_segmentation_service/internal/modules/segment_service"
+	"user_segmentation_service/internal/modules/user_service"
+	"user_segmentation_service/internal/server"
 )
 
 var (
 	storage *pgxpool.Pool
+	serv    *server.APIServer
 )
 
 // main - entry point.
@@ -29,10 +33,18 @@ func main() {
 
 	storage, err := db.NewPostgresPool(ctx, cfg.DB)
 	if err != nil {
-		logg.Error("NewPostgresPool", "err", err)
+		logg.Error("db.NewPostgresPool", "err", err)
 		os.Exit(1)
 	}
-	_ = storage
+	uu := user_service.NewUserService(storage)
+	ss := segment_service.NewSegmentService(storage)
+	serv := server.New(ctx, cfg.APIServer, uu, ss)
+
+	go func() {
+		if err := serv.Start(); err != nil {
+			logg.Error("serv.Start", "err", err)
+		}
+	}()
 
 	gracefulShutdown(ctxCancel)
 }
@@ -54,4 +66,5 @@ func gracefulShutdown(ctxCancel context.CancelFunc) {
 
 	time.Sleep(2 * time.Second)
 	slog.Info("Application Stopped!")
+	close(signalChan)
 }
