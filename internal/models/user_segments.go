@@ -1,7 +1,9 @@
+// Package models defines data structures for the application.
 package models
 
 import "time"
 
+// UserSegment represents a relation between a user and a segment with an optional expiration time.
 type UserSegment struct {
 	UserID         int       `json:"user_id" db:"user_id"`
 	SegmentID      int       `json:"segment_id" db:"segment_id"`

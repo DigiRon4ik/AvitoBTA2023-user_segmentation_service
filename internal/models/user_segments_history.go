@@ -1,7 +1,9 @@
+// Package models defines data structures for the application.
 package models
 
 import "time"
 
+// UserSegmentHistory stores historical records of user-segment actions.
 type UserSegmentHistory struct {
 	ID        int       `json:"id" db:"id"`
 	UserID    int       `json:"user_id" db:"user_id"`
