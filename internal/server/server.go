@@ -8,8 +8,6 @@ import (
 	"user_segmentation_service/internal/models"
 )
 
-var server *http.Server
-
 type Config struct {
 	Host string `envconfig:"HOST" default:"localhost"`
 	Port string `envconfig:"PORT" default:"8080"`
@@ -61,8 +59,4 @@ func (api *APIServer) Start() error {
 		IdleTimeout:  time.Second * 60, // Keep-alive connections timeout
 	}
 	return server.ListenAndServe()
-}
-
-func (api *APIServer) Shutdown() error {
-	return server.Shutdown(api.ctx)
 }
