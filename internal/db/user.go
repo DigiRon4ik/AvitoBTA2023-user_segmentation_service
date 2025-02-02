@@ -9,7 +9,7 @@ import (
 const (
 	createUser  = `INSERT INTO users (name) VALUES ($1) RETURNING id, created_at;`
 	deleteUser  = `DELETE FROM users WHERE id = $1;`
-	updateUser  = `UPDATE users SET name = $1 WHERE id = $2;`
+	updateUser  = `UPDATE users SET name = $1 WHERE id = $2 RETURNING created_at;`
 	getUserByID = `SELECT id, name, created_at FROM users WHERE id = $1;`
 	getAllUsers = `SELECT * FROM users;`
 )
@@ -27,9 +27,8 @@ func (s *Store) DeleteUser(ctx context.Context, userID int) error {
 }
 
 // UpdateUser changes the user data (e.g. name) by id.
-func (s *Store) UpdateUser(ctx context.Context, userID int, name string) error {
-	_, err := s.pool.Exec(ctx, updateUser, name, userID)
-	return err
+func (s *Store) UpdateUser(ctx context.Context, user *models.User) error {
+	return s.pool.QueryRow(ctx, updateUser, user.Name, user.ID).Scan(&user.CreatedAt)
 }
 
 // GetUserByID returns the user by ID.
