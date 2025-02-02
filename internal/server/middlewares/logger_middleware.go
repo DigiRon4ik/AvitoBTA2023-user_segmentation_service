@@ -1,3 +1,4 @@
+// Package middlewares provides HTTP middleware implementations.
 package middlewares
 
 import (

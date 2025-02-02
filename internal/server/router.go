@@ -1,7 +1,10 @@
+// Package server contains the logic for setting up and running an HTTP server to manage users and segments.
+// Includes route handling, middleware setup, and server configuration.
 package server
 
 import "user_segmentation_service/internal/server/handlers"
 
+// configureRouter sets up the HTTP route handlers for users and segments.
 func (api *APIServer) configureRouter() {
 	userHandlers := handlers.NewUserHandlers(api.ctx, api.us)
 	api.router.HandleFunc("POST /users", userHandlers.CreateHandle)

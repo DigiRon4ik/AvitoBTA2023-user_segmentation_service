@@ -1,3 +1,4 @@
+// Package handlers provide HTTP request handlers for user segments.
 package handlers
 
 import (
@@ -9,6 +10,7 @@ import (
 	"user_segmentation_service/internal/models"
 )
 
+// userService defines the methods required for managing users.
 type userService interface {
 	Create(ctx context.Context, user *models.User) error
 	Delete(ctx context.Context, userID int) error
@@ -17,11 +19,13 @@ type userService interface {
 	GetAll(ctx context.Context) ([]*models.User, error)
 }
 
+// UserHandlers is a structure that contains the user service and context for handling user-related HTTP requests.
 type UserHandlers struct {
 	users userService
 	ctx   context.Context
 }
 
+// NewUserHandlers creates a new instance of UserHandlers with the provided context and user service.
 func NewUserHandlers(ctx context.Context, us userService) *UserHandlers {
 	return &UserHandlers{
 		users: us,
@@ -29,6 +33,8 @@ func NewUserHandlers(ctx context.Context, us userService) *UserHandlers {
 	}
 }
 
+// CreateHandle handles HTTP POST requests for creating a new user.
+// [ POST /users ]
 func (uh *UserHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err  error
@@ -52,6 +58,8 @@ func (uh *UserHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DeleteHandle handles HTTP DELETE requests for deleting a user by ID.
+// [ DELETE /users/{id} ]
 func (uh *UserHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err    error
@@ -71,6 +79,8 @@ func (uh *UserHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// UpdateHandle handles HTTP PUT requests for updating a user by ID.
+// [ PUT /users/{id} ]
 func (uh *UserHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err    error
@@ -99,6 +109,8 @@ func (uh *UserHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetHandle handles HTTP GET requests for retrieving a user by ID.
+// [ GET /users/{id} ]
 func (uh *UserHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err    error
@@ -122,7 +134,9 @@ func (uh *UserHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (uh *UserHandlers) GetAllHandle(w http.ResponseWriter, r *http.Request) {
+// GetAllHandle handles HTTP GET requests for retrieving all users.
+// [ GET /users ]
+func (uh *UserHandlers) GetAllHandle(w http.ResponseWriter, _ *http.Request) {
 	var (
 		err   error
 		users []*models.User

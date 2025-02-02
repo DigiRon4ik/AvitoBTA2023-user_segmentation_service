@@ -1,3 +1,4 @@
+// Package main = entry point.
 package main
 
 import (

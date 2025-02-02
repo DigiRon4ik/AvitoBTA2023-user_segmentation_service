@@ -1,3 +1,4 @@
+// Package handlers provide HTTP request handlers for user segments.
 package handlers
 
 import (
@@ -8,6 +9,7 @@ import (
 	"user_segmentation_service/internal/models"
 )
 
+// segmentService defines the methods for interacting with the segment data.
 type segmentService interface {
 	Create(ctx context.Context, seg *models.Segment) error
 	Delete(ctx context.Context, slug string) error
@@ -16,11 +18,13 @@ type segmentService interface {
 	GetAll(ctx context.Context) ([]*models.Segment, error)
 }
 
+// SegmentHandlers handles HTTP requests related to segments.
 type SegmentHandlers struct {
 	segments segmentService
 	ctx      context.Context
 }
 
+// NewSegmentHandlers initializes and returns a new SegmentHandlers instance.
 func NewSegmentHandlers(ctx context.Context, ss segmentService) *SegmentHandlers {
 	return &SegmentHandlers{
 		segments: ss,
@@ -28,6 +32,8 @@ func NewSegmentHandlers(ctx context.Context, ss segmentService) *SegmentHandlers
 	}
 }
 
+// CreateHandle handles the request for creating a new segment.
+// [ POST /segments ]
 func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err     error
@@ -51,10 +57,12 @@ func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// DeleteHandle handles the request for deleting a segment.
+// [ DELETE /segments/{slug} ]
 func (sh *SegmentHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err  error
-		slug string = r.PathValue("slug")
+		slug = r.PathValue("slug")
 	)
 
 	if err = sh.segments.Delete(sh.ctx, slug); err != nil {
@@ -66,10 +74,12 @@ func (sh *SegmentHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// UpdateHandle handles the request for updating an existing segment.
+// [ PUT /segments/{slug} ]
 func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err     error
-		slug    string = r.PathValue("slug")
+		slug    = r.PathValue("slug")
 		segment *models.Segment
 	)
 
@@ -90,10 +100,12 @@ func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// GetHandle handles the request for retrieving a single segment by its slug.
+// [ GET /segments/{slug} ]
 func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err     error
-		slug    string = r.PathValue("slug")
+		slug    = r.PathValue("slug")
 		segment *models.Segment
 	)
 
@@ -110,7 +122,9 @@ func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (sh *SegmentHandlers) GetAllHandle(w http.ResponseWriter, r *http.Request) {
+// GetAllHandle handles the request for retrieving all segments.
+// [ GET /segments ]
+func (sh *SegmentHandlers) GetAllHandle(w http.ResponseWriter, _ *http.Request) {
 	var (
 		err      error
 		segments []*models.Segment

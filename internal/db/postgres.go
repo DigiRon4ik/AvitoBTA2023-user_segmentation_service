@@ -1,3 +1,4 @@
+// Package db provides functionality for interacting with the PostgreSQL database.
 package db
 
 import (
@@ -18,6 +19,7 @@ type Config struct {
 	Password string `envconfig:"PASSWORD" default:"demo_password"`
 }
 
+// Store - connections store with basic methods of working with the database.
 type Store struct {
 	pool *pgxpool.Pool
 }
