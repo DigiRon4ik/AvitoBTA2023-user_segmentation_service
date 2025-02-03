@@ -52,7 +52,14 @@ const (
                 RETURNING user_id, segment_id, created_at)
 		INSERT INTO user_segments_history (user_id, segment_id, action, created_at)
 		SELECT user_id, segment_id, 'ADD' AS action, created_at
-		FROM inserted_segments;`
+		FROM inserted_segments i
+		WHERE NOT EXISTS (
+            SELECT 1 FROM user_segments_history h
+            WHERE h.user_id = i.user_id
+                AND h.segment_id = i.segment_id
+                AND h.action = 'ADD'
+                AND h.created_at = i.created_at
+		);`
 )
 
 // SegmentModification describes the data for adding a segment to a user.
@@ -106,7 +113,7 @@ func (s *Store) UpdateUserSegments(ctx context.Context, userID int, add []Segmen
 		}
 	}
 	// Request
-	_, err = tx.Exec(ctx, addingSegmentsForUser, userID, slugs, expTimes)
+	_, err = tx.Exec(ctx, addingSegmentsForUser, slugs, expTimes, userID)
 	if err != nil {
 		return fmt.Errorf("error adding segments for user %d: %w", userID, err)
 	}
