@@ -57,7 +57,7 @@ func (s *UserSegmentationService) GetHistoryCSV(ctx context.Context, userID, yea
 
 	// Create a directorial for reports, if it is even not.
 	outputDir := "reports"
-	if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
+	if err = os.MkdirAll(outputDir, os.ModePerm); err != nil {
 		return "", err
 	}
 
@@ -65,7 +65,8 @@ func (s *UserSegmentationService) GetHistoryCSV(ctx context.Context, userID, yea
 	filename := fmt.Sprintf("report_%d_%d_%d.csv", userID, year, month)
 	filePath := filepath.Join(outputDir, filename)
 
-	file, err := os.Create(filePath)
+	var file *os.File
+	file, err = os.Create(filePath)
 	if err != nil {
 		return "", err
 	}
