@@ -5,11 +5,17 @@ package server
 import (
 	"net/http"
 
+	httpSwagger "github.com/swaggo/http-swagger"
+
+	_ "user_segmentation_service/api"
+
 	"user_segmentation_service/internal/server/handlers"
 )
 
 // configureRouter sets up the HTTP route handlers for users and segments.
 func (api *APIServer) configureRouter() {
+	api.router.Handle("/swagger/", httpSwagger.WrapHandler)
+
 	userHandler := handlers.NewUserHandler(api.ctx, api.us)
 	api.router.HandleFunc("POST /users", userHandler.CreateHandle)
 	api.router.HandleFunc("DELETE /users/{id}", userHandler.DeleteHandle)

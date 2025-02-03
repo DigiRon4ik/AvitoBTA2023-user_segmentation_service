@@ -1,3 +1,14 @@
+// @title        User Segmentation API
+// @version      1.0
+// @description  API for managing user segments.
+
+// @contact.name  DigiRon's Team
+// @contact.url   https://github.com/DigiRon4ik
+// @contact.email dr.digiron@gmail.com
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
 // Package main = entry point.
 package main
 

@@ -33,13 +33,25 @@ func NewUserSegmentsHandler(ctx context.Context, uss userSegmentsService) *UserS
 }
 
 // SegmentsRequest represents a request for updating user segments.
+// @Description Segment lists for adding and deleting segments
 type SegmentsRequest struct {
-	Add    []db.SegmentModification `json:"add,omitempty"`
-	Remove []string                 `json:"remove,omitempty"`
+	// required: false
+	Add []db.SegmentModification `json:"add,omitempty"`
+	// required: false
+	Remove []string `json:"remove,omitempty"`
 }
 
 // UpdateHandle processes user segment updates via HTTP request.
-// [ PATH /users{id}/segments ]
+//
+//	@Summary        Update user segments
+//	@Description    Updates the user in the database and returns an instance of the user
+//	@Tags           user-segments
+//	@Accept         json
+//	@Produce        json
+//	@Param          id          path        int                 true    "User ID"
+//	@Param          Segments    body        SegmentsRequest     true    "User change information"
+//	@Success        200                                                 "User segments have been successfully changed"
+//	@Router         /users/{id}/segments [patch]
 func (uss *UserSegmentsHandler) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err    error
@@ -68,7 +80,15 @@ func (uss *UserSegmentsHandler) UpdateHandle(w http.ResponseWriter, r *http.Requ
 }
 
 // GetActiveHandle retrieves active segments for a user via HTTP request.
-// [ GET /users{id}/segments ]
+//
+//	@Summary        Get active user segments
+//	@Description    Gets the active user segments by ID.
+//	@Tags           user-segments
+//	@Accept         json
+//	@Produce        json
+//	@Param          id      path        int                     true    "User ID"
+//	@Success        200     {array}     dto.SegmentResponse             "Array with active user segments received"
+//	@Router         /users/{id}/segments [get]
 func (uss *UserSegmentsHandler) GetActiveHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err      error
@@ -93,7 +113,17 @@ func (uss *UserSegmentsHandler) GetActiveHandle(w http.ResponseWriter, r *http.R
 }
 
 // GetHistoryCSVHandle generates a CSV report and returns JSON with the download URL.
-// [ GET /users/{id}/segments/history?year=YYYY&month=MM ]
+//
+//	@Summary        Update user segments
+//	@Description    Updates the user in the database and returns an instance of the user
+//	@Tags           user-segments-history
+//	@Accept         json
+//	@Produce        json
+//	@Param          id      path        int     true    "User ID"
+//	@Param          year    query       int     true    "Year, e.g. 2025"
+//	@Param          month   query       int     true    "Month, e.g. 02"
+//	@Success        200     {object}    dto.USHResponse "CSV-history is ready at the link"
+//	@Router         /users/{id}/segments/history [get]
 func (uss *UserSegmentsHandler) GetHistoryCSVHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err                 error

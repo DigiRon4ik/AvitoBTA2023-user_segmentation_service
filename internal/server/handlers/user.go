@@ -34,7 +34,15 @@ func NewUserHandler(ctx context.Context, us userService) *UserHandlers {
 }
 
 // CreateHandle handles HTTP POST requests for creating a new user.
-// [ POST /users ]
+//
+//	@Summary        Add a user
+//	@Description    Creates a user in the database and returns an instance of the user
+//	@Tags           users
+//	@Accept         json
+//	@Produce        json
+//	@Param          User    body        dto.UserCreateRequest    true    "Information about the added user"
+//	@Success        201     {object}    dto.UserResponse                 "The user was successfully created"
+//	@Router         /users [post]
 func (uh *UserHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err  error
@@ -59,7 +67,15 @@ func (uh *UserHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteHandle handles HTTP DELETE requests for deleting a user by ID.
-// [ DELETE /users/{id} ]
+//
+//	@Summary        Delete user
+//	@Description    Deletes a user from the database
+//	@Tags           users
+//	@Accept         json
+//	@Produce        json
+//	@Param          id      path        int     true    "User ID"
+//	@Success        204                                 "The user with this id was successfully deleted"
+//	@Router         /users/{id} [delete]
 func (uh *UserHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err    error
@@ -80,7 +96,16 @@ func (uh *UserHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateHandle handles HTTP PUT requests for updating a user by ID.
-// [ PUT /users/{id} ]
+//
+//	@Summary        Update user
+//	@Description    Updates the user in the database and returns an instance of the user
+//	@Tags           users
+//	@Accept         json
+//	@Produce        json
+//	@Param          id      path        int                     true    "User ID"
+//	@Param          User    body        dto.UserUpdateRequest   true    "User change information"
+//	@Success        200     {object}    dto.UserResponse                "A user with this id has been changed"
+//	@Router         /users/{id} [put]
 func (uh *UserHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err    error
@@ -110,7 +135,15 @@ func (uh *UserHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetHandle handles HTTP GET requests for retrieving a user by ID.
-// [ GET /users/{id} ]
+//
+//	@Summary        Get user
+//	@Description    Get user by id
+//	@Tags           users
+//	@Accept         json
+//	@Produce        json
+//	@Param          id      path        int                 true    "User ID"
+//	@Success        200     {object}    dto.UserResponse            "A user with this id was received"
+//	@Router         /users/{id} [get]
 func (uh *UserHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err    error
@@ -135,7 +168,14 @@ func (uh *UserHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetAllHandle handles HTTP GET requests for retrieving all users.
-// [ GET /users ]
+//
+//	@Summary        Get All users
+//	@Description    Get all users from the database
+//	@Tags           users
+//	@Accept         json
+//	@Produce        json
+//	@Success        200     {array}     dto.UserResponse        "An array of users was obtained"
+//	@Router         /users [get]
 func (uh *UserHandlers) GetAllHandle(w http.ResponseWriter, _ *http.Request) {
 	var (
 		err   error

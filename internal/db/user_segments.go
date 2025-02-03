@@ -64,7 +64,9 @@ const (
 
 // SegmentModification describes the data for adding a segment to a user.
 type SegmentModification struct {
-	Slug           string     `json:"slug"`                      // segment slug
+	// required: true
+	Slug string `json:"slug"` // segment slug
+	// required: false
 	ExpirationTime *time.Time `json:"expiration_time,omitempty"` // Optionally, if nil, the default value is used
 }
 

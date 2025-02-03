@@ -33,7 +33,15 @@ func NewSegmentHandler(ctx context.Context, ss segmentService) *SegmentHandlers 
 }
 
 // CreateHandle handles the request for creating a new segment.
-// [ POST /segments ]
+//
+//	@Summary        Add segment
+//	@Description    Creates a segment in the database and returns the instance
+//	@Tags           segments
+//	@Accept         json
+//	@Produce        json
+//	@Param          Segment body        dto.SegmentCreateRequest    true    "Information about the segment to be added"
+//	@Success        201     {object}    dto.SegmentResponse                 "The segment has been successfully established"
+//	@Router         /segments [post]
 func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err     error
@@ -58,7 +66,15 @@ func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) 
 }
 
 // DeleteHandle handles the request for deleting a segment.
-// [ DELETE /segments/{slug} ]
+//
+//	@Summary        Delete segment
+//	@Description    Deletes a segment from the database
+//	@Tags           segments
+//	@Accept         json
+//	@Produce        json
+//	@Param          slug    path    string  true    "Segment slug"
+//	@Success        204                             "The segment with this slug has been successfully deleted"
+//	@Router         /segments/{slug} [delete]
 func (sh *SegmentHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err  error
@@ -75,7 +91,16 @@ func (sh *SegmentHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) 
 }
 
 // UpdateHandle handles the request for updating an existing segment.
-// [ PUT /segments/{slug} ]
+//
+//	@Summary        Update segment
+//	@Description    Updates a segment in the database and returns an instance of it
+//	@Tags           segments
+//	@Accept         json
+//	@Produce        json
+//	@Param          slug    path        string                      true    "Segment slug"
+//	@Param          Segment body        dto.SegmentUpdateRequest    true    "Segment change information"
+//	@Success        200     {object}    dto.SegmentResponse                 "The segment with this slogan has been changed"
+//	@Router         /segments/{slug} [put]
 func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err     error
@@ -101,7 +126,15 @@ func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) 
 }
 
 // GetHandle handles the request for retrieving a single segment by its slug.
-// [ GET /segments/{slug} ]
+//
+//	@Summary        Get segment
+//	@Description    Get segment by slug
+//	@Tags           segments
+//	@Accept         json
+//	@Produce        json
+//	@Param          slug    path        string      true        "Segment slug"
+//	@Success        200     {object}    dto.SegmentResponse     "A segment with such a slogan was obtained"
+//	@Router         /segments/{slug} [get]
 func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	var (
 		err     error
@@ -123,7 +156,14 @@ func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetAllHandle handles the request for retrieving all segments.
-// [ GET /segments ]
+//
+//	@Summary        Get All segments
+//	@Description    Get all segments from the database
+//	@Tags           segments
+//	@Accept         json
+//	@Produce        json
+//	@Success        200     {array}    dto.SegmentResponse     "An array of segments was obtained"
+//	@Router         /segments [get]
 func (sh *SegmentHandlers) GetAllHandle(w http.ResponseWriter, _ *http.Request) {
 	var (
 		err      error

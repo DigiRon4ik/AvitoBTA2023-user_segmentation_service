@@ -1,0 +1,388 @@
+definitions:
+  db.SegmentModification:
+    properties:
+      expiration_time:
+        description: 'required: false'
+        type: string
+      slug:
+        description: 'required: true'
+        type: string
+    type: object
+  dto.SegmentCreateRequest:
+    description: Segment information at creation
+    properties:
+      description:
+        description: 'required: false'
+        type: string
+      slug:
+        description: 'required: true'
+        type: string
+    type: object
+  dto.SegmentResponse:
+    description: Segment information when creating/updating a segment
+    properties:
+      created_at:
+        description: 'read only: true'
+        type: string
+      description:
+        type: string
+      id:
+        description: 'read only: true'
+        type: integer
+      slug:
+        type: string
+    type: object
+  dto.SegmentUpdateRequest:
+    description: Segment information when updating
+    properties:
+      description:
+        description: 'required: true'
+        type: string
+    type: object
+  dto.USHResponse:
+    description: History information
+    properties:
+      url:
+        description: 'required: true'
+        type: string
+    type: object
+  dto.UserCreateRequest:
+    description: User information on creation
+    properties:
+      name:
+        description: 'required: true'
+        type: string
+    type: object
+  dto.UserResponse:
+    description: User information at creation/update
+    properties:
+      created_at:
+        description: 'read only: true'
+        type: string
+      id:
+        description: 'read only: true'
+        type: integer
+      name:
+        type: string
+    type: object
+  dto.UserUpdateRequest:
+    description: User information when updating
+    properties:
+      name:
+        description: 'required: true'
+        type: string
+    type: object
+  handlers.SegmentsRequest:
+    description: Segment lists for adding and deleting segments
+    properties:
+      add:
+        description: 'required: false'
+        items:
+          $ref: '#/definitions/db.SegmentModification'
+        type: array
+      remove:
+        description: 'required: false'
+        items:
+          type: string
+        type: array
+    type: object
+info:
+  contact:
+    email: dr.digiron@gmail.com
+    name: DigiRon's Team
+    url: https://github.com/DigiRon4ik
+  description: API for managing user segments.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: User Segmentation API
+  version: "1.0"
+paths:
+  /segments:
+    get:
+      consumes:
+      - application/json
+      description: Get all segments from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: An array of segments was obtained
+          schema:
+            items:
+              $ref: '#/definitions/dto.SegmentResponse'
+            type: array
+      summary: Get All segments
+      tags:
+      - segments
+    post:
+      consumes:
+      - application/json
+      description: Creates a segment in the database and returns the instance
+      parameters:
+      - description: Information about the segment to be added
+        in: body
+        name: Segment
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SegmentCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: The segment has been successfully established
+          schema:
+            $ref: '#/definitions/dto.SegmentResponse'
+      summary: Add segment
+      tags:
+      - segments
+  /segments/{slug}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a segment from the database
+      parameters:
+      - description: Segment slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: The segment with this slug has been successfully deleted
+      summary: Delete segment
+      tags:
+      - segments
+    get:
+      consumes:
+      - application/json
+      description: Get segment by slug
+      parameters:
+      - description: Segment slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: A segment with such a slogan was obtained
+          schema:
+            $ref: '#/definitions/dto.SegmentResponse'
+      summary: Get segment
+      tags:
+      - segments
+    put:
+      consumes:
+      - application/json
+      description: Updates a segment in the database and returns an instance of it
+      parameters:
+      - description: Segment slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: Segment change information
+        in: body
+        name: Segment
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SegmentUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The segment with this slogan has been changed
+          schema:
+            $ref: '#/definitions/dto.SegmentResponse'
+      summary: Update segment
+      tags:
+      - segments
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: An array of users was obtained
+          schema:
+            items:
+              $ref: '#/definitions/dto.UserResponse'
+            type: array
+      summary: Get All users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Creates a user in the database and returns an instance of the user
+      parameters:
+      - description: Information about the added user
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: The user was successfully created
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+      summary: Add a user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user from the database
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: The user with this id was successfully deleted
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Get user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: A user with this id was received
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+      summary: Get user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Updates the user in the database and returns an instance of the
+        user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User change information
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: A user with this id has been changed
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+      summary: Update user
+      tags:
+      - users
+  /users/{id}/segments:
+    get:
+      consumes:
+      - application/json
+      description: Gets the active user segments by ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Array with active user segments received
+          schema:
+            items:
+              $ref: '#/definitions/dto.SegmentResponse'
+            type: array
+      summary: Get active user segments
+      tags:
+      - user-segments
+    patch:
+      consumes:
+      - application/json
+      description: Updates the user in the database and returns an instance of the
+        user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User change information
+        in: body
+        name: Segments
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.SegmentsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User segments have been successfully changed
+      summary: Update user segments
+      tags:
+      - user-segments
+  /users/{id}/segments/history:
+    get:
+      consumes:
+      - application/json
+      description: Updates the user in the database and returns an instance of the
+        user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Year, e.g. 2025
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Month, e.g. 02
+        in: query
+        name: month
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: CSV-history is ready at the link
+          schema:
+            $ref: '#/definitions/dto.USHResponse'
+      summary: Update user segments
+      tags:
+      - user-segments-history
+swagger: "2.0"
