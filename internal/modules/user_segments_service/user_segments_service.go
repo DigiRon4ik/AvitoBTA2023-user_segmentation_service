@@ -1,3 +1,4 @@
+// Package user_segments_service provides business logic for managing user segments.
 package user_segments_service
 
 import (
@@ -7,6 +8,7 @@ import (
 	"user_segmentation_service/internal/models"
 )
 
+// DB defines the required database operations for user management.
 type DB interface {
 	UpdateUserSegments(ctx context.Context, userID int, add []db.SegmentModification, remove []string) error
 	GetActiveSegmentsForUser(ctx context.Context, userID int) ([]*models.Segment, error)
@@ -24,15 +26,15 @@ func NewUserSegmentationService(store DB) *UserSegmentationService {
 	}
 }
 
-// Update обновляет сегменты пользователя, выполняя добавление и удаление сегментов.
-// add - список сегментов для добавления (с опциональным TTL),
-// remove - список slug сегментов, которые нужно удалить.
+// Update updates user segments by adding and removing segments.
+// add - list of segments to add (with optional TTL),
+// remove - list of slug segments to remove.
 func (s *UserSegmentationService) Update(ctx context.Context, userID int, add []db.SegmentModification, remove []string) error {
 	return s.store.UpdateUserSegments(ctx, userID, add, remove)
 }
 
-// GetActive возвращает список активных сегментов пользователя.
-// Активными считаются сегменты, у которых время истечения (TTL) ещё не наступило.
+// GetActive returns the list of active user segments.
+// Active segments are segments that have not yet expired (TTL).
 func (s *UserSegmentationService) GetActive(ctx context.Context, userID int) ([]*models.Segment, error) {
 	return s.store.GetActiveSegmentsForUser(ctx, userID)
 }
