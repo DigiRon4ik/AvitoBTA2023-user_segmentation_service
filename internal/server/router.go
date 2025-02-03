@@ -6,17 +6,21 @@ import "user_segmentation_service/internal/server/handlers"
 
 // configureRouter sets up the HTTP route handlers for users and segments.
 func (api *APIServer) configureRouter() {
-	userHandlers := handlers.NewUserHandlers(api.ctx, api.us)
-	api.router.HandleFunc("POST /users", userHandlers.CreateHandle)
-	api.router.HandleFunc("DELETE /users/{id}", userHandlers.DeleteHandle)
-	api.router.HandleFunc("PUT /users/{id}", userHandlers.UpdateHandle)
-	api.router.HandleFunc("GET /users/{id}", userHandlers.GetHandle)
-	api.router.HandleFunc("GET /users", userHandlers.GetAllHandle)
+	userHandler := handlers.NewUserHandler(api.ctx, api.us)
+	api.router.HandleFunc("POST /users", userHandler.CreateHandle)
+	api.router.HandleFunc("DELETE /users/{id}", userHandler.DeleteHandle)
+	api.router.HandleFunc("PUT /users/{id}", userHandler.UpdateHandle)
+	api.router.HandleFunc("GET /users/{id}", userHandler.GetHandle)
+	api.router.HandleFunc("GET /users", userHandler.GetAllHandle)
 
-	segmentHandlers := handlers.NewSegmentHandlers(api.ctx, api.ss)
-	api.router.HandleFunc("POST /segments", segmentHandlers.CreateHandle)
-	api.router.HandleFunc("DELETE /segments/{slug}", segmentHandlers.DeleteHandle)
-	api.router.HandleFunc("PUT /segments/{slug}", segmentHandlers.UpdateHandle)
-	api.router.HandleFunc("GET /segments/{slug}", segmentHandlers.GetHandle)
-	api.router.HandleFunc("GET /segments", segmentHandlers.GetAllHandle)
+	segmentHandler := handlers.NewSegmentHandler(api.ctx, api.ss)
+	api.router.HandleFunc("POST /segments", segmentHandler.CreateHandle)
+	api.router.HandleFunc("DELETE /segments/{slug}", segmentHandler.DeleteHandle)
+	api.router.HandleFunc("PUT /segments/{slug}", segmentHandler.UpdateHandle)
+	api.router.HandleFunc("GET /segments/{slug}", segmentHandler.GetHandle)
+	api.router.HandleFunc("GET /segments", segmentHandler.GetAllHandle)
+
+	userSegmentsHandler := handlers.NewUserSegmentsHandler(api.ctx, api.uss)
+	api.router.HandleFunc("PATCH /users/{id}/segments", userSegmentsHandler.UpdateHandle)
+	api.router.HandleFunc("GET /users/{id}/segments", userSegmentsHandler.GetActiveHandle)
 }

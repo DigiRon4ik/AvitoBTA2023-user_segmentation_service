@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"user_segmentation_service/internal/db"
 	"user_segmentation_service/internal/models"
 	"user_segmentation_service/internal/server/middlewares"
 )
@@ -35,6 +36,11 @@ type segmentService interface {
 	GetAll(ctx context.Context) ([]*models.Segment, error)
 }
 
+type userSegmentsService interface {
+	Update(ctx context.Context, userID int, add []db.SegmentModification, remove []string) error
+	GetActive(ctx context.Context, userID int) ([]*models.Segment, error)
+}
+
 // APIServer represents the API server, including configuration, router, and services.
 type APIServer struct {
 	router *http.ServeMux  // HTTP router for handling requests.
@@ -42,10 +48,11 @@ type APIServer struct {
 	ctx    context.Context // Application context.
 	us     userService     // User service for user-related operations.
 	ss     segmentService  // Segment service for segment-related operations.
+	uss    userSegmentsService
 }
 
 // New creates a new instance of APIServer with the provided context, configuration, and services.
-func New(ctx context.Context, cfg Config, us userService, ss segmentService) *APIServer {
+func New(ctx context.Context, cfg Config, us userService, ss segmentService, uss userSegmentsService) *APIServer {
 	router := http.NewServeMux()
 
 	return &APIServer{
@@ -54,6 +61,7 @@ func New(ctx context.Context, cfg Config, us userService, ss segmentService) *AP
 		ctx:    ctx,
 		us:     us,
 		ss:     ss,
+		uss:    uss,
 	}
 }
 

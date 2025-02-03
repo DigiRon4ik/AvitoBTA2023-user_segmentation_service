@@ -15,6 +15,7 @@ import (
 	"user_segmentation_service/internal/db"
 	"user_segmentation_service/internal/logger"
 	"user_segmentation_service/internal/modules/segment_service"
+	"user_segmentation_service/internal/modules/user_segments_service"
 	"user_segmentation_service/internal/modules/user_service"
 	"user_segmentation_service/internal/server"
 )
@@ -38,7 +39,8 @@ func main() {
 	}
 	uu := user_service.NewUserService(storage)
 	ss := segment_service.NewSegmentService(storage)
-	serv := server.New(ctx, cfg.APIServer, uu, ss)
+	uss := user_segments_service.NewUserSegmentationService(storage)
+	serv := server.New(ctx, cfg.APIServer, uu, ss, uss)
 
 	go func() {
 		if err := serv.Start(); err != nil {
