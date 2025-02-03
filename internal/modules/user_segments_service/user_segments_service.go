@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"user_segmentation_service/internal/db"
@@ -57,16 +58,20 @@ func (s *UserSegmentationService) GetHistoryCSV(ctx context.Context, userID, yea
 
 	// Create a directorial for reports, if it is even not.
 	outputDir := "reports"
-	if err = os.MkdirAll(outputDir, os.ModePerm); err != nil {
+	if err = os.MkdirAll(outputDir, 0750); err != nil {
 		return "", err
 	}
 
 	// Form the name of the file: report_{userID}_{year}_{month}.csv
 	filename := fmt.Sprintf("report_%d_%d_%d.csv", userID, year, month)
 	filePath := filepath.Join(outputDir, filename)
+	cleanPath := filepath.Clean(filePath)
+	if !strings.HasPrefix(cleanPath, outputDir) {
+		return "", fmt.Errorf("attempt to access restricted path: %s", cleanPath)
+	}
 
 	var file *os.File
-	file, err = os.Create(filePath)
+	file, err = os.Create(cleanPath)
 	if err != nil {
 		return "", err
 	}
@@ -78,7 +83,7 @@ func (s *UserSegmentationService) GetHistoryCSV(ctx context.Context, userID, yea
 	writer.Comma = ';'
 	// Record the title
 	header := []string{"user_id", "user_name", "segment_slug", "segment_description", "action", "created_at"}
-	if err := writer.Write(header); err != nil {
+	if err = writer.Write(header); err != nil {
 		return "", err
 	}
 
@@ -92,12 +97,12 @@ func (s *UserSegmentationService) GetHistoryCSV(ctx context.Context, userID, yea
 			rec.Action,
 			rec.CreatedAt.Format(time.RFC3339),
 		}
-		if err := writer.Write(row); err != nil {
+		if err = writer.Write(row); err != nil {
 			return "", err
 		}
 	}
 	writer.Flush()
-	if err := writer.Error(); err != nil {
+	if err = writer.Error(); err != nil {
 		return "", err
 	}
 
