@@ -39,6 +39,7 @@ type segmentService interface {
 type userSegmentsService interface {
 	Update(ctx context.Context, userID int, add []db.SegmentModification, remove []string) error
 	GetActive(ctx context.Context, userID int) ([]*models.Segment, error)
+	GetHistoryCSV(ctx context.Context, userID, year, month int) (string, error)
 }
 
 // APIServer represents the API server, including configuration, router, and services.

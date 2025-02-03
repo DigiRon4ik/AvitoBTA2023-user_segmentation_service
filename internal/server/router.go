@@ -2,7 +2,11 @@
 // Includes route handling, middleware setup, and server configuration.
 package server
 
-import "user_segmentation_service/internal/server/handlers"
+import (
+	"net/http"
+
+	"user_segmentation_service/internal/server/handlers"
+)
 
 // configureRouter sets up the HTTP route handlers for users and segments.
 func (api *APIServer) configureRouter() {
@@ -23,4 +27,8 @@ func (api *APIServer) configureRouter() {
 	userSegmentsHandler := handlers.NewUserSegmentsHandler(api.ctx, api.uss)
 	api.router.HandleFunc("PATCH /users/{id}/segments", userSegmentsHandler.UpdateHandle)
 	api.router.HandleFunc("GET /users/{id}/segments", userSegmentsHandler.GetActiveHandle)
+	api.router.HandleFunc("GET /users/{id}/segments/history", userSegmentsHandler.GetHistoryCSVHandle)
+
+	fs := http.FileServer(http.Dir("reports"))
+	api.router.Handle("/reports/", http.StripPrefix("/reports/", fs))
 }

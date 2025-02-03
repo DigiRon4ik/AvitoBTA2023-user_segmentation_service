@@ -76,6 +76,7 @@ func defaultExpiration() time.Time {
 // UpdateUserSegments updates user segments (transaction): adds and deletes segments.
 // For each added segment, a record is inserted into the user_segments table and recorded in the history.
 // For each segment to be deleted, the connection is deleted and the deletion is recorded in the history.
+// TODO: Разделить на маленькие функции.
 func (s *Store) UpdateUserSegments(ctx context.Context, userID int, add []SegmentModification, remove []string) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
@@ -89,7 +90,7 @@ func (s *Store) UpdateUserSegments(ctx context.Context, userID int, add []Segmen
 		}
 	}()
 
-	// TODO: add the use of batch requests or COPY FROM if len(remove/add) > 10k+
+	// TODO: добавьте использование batch-запросов или COPY FROM если len(add/remove) > 10k+
 	// Removing segments
 	_, err = tx.Exec(ctx, removingSegmentsForUser, userID, remove)
 	if err != nil {
