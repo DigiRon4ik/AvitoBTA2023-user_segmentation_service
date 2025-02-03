@@ -24,8 +24,8 @@ type SegmentHandlers struct {
 	ctx      context.Context
 }
 
-// NewSegmentHandlers initializes and returns a new SegmentHandlers instance.
-func NewSegmentHandlers(ctx context.Context, ss segmentService) *SegmentHandlers {
+// NewSegmentHandler initializes and returns a new SegmentHandlers instance.
+func NewSegmentHandler(ctx context.Context, ss segmentService) *SegmentHandlers {
 	return &SegmentHandlers{
 		segments: ss,
 		ctx:      ctx,

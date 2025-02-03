@@ -25,8 +25,8 @@ type UserHandlers struct {
 	ctx   context.Context
 }
 
-// NewUserHandlers creates a new instance of UserHandlers with the provided context and user service.
-func NewUserHandlers(ctx context.Context, us userService) *UserHandlers {
+// NewUserHandler creates a new instance of UserHandlers with the provided context and user service.
+func NewUserHandler(ctx context.Context, us userService) *UserHandlers {
 	return &UserHandlers{
 		users: us,
 		ctx:   ctx,
