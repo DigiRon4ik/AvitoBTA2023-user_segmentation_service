@@ -144,8 +144,8 @@ cd AvitoBTA2023-user_segmentation_service
 
 ### — _Video:_
 <p align="center">
-  <a href="https://youtu.be/">
-    <img width=800 src="https://i.imgur.com/ma6wGIF.png" >
+  <a href="https://youtu.be/27ToZvGJTVY">
+    <img width=800 src="https://i.imgur.com/bqTOsir.png" >
   </a>
 </p>
 
