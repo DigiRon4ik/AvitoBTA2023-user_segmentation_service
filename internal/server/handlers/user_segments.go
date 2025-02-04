@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -23,6 +24,8 @@ type UserSegmentsHandler struct {
 	userSegments userSegmentsService
 	ctx          context.Context
 }
+
+var userSegmentsHandler = "user segments handler"
 
 // NewUserSegmentsHandler creates a new UserSegmentsHandler instance.
 func NewUserSegmentsHandler(ctx context.Context, uss userSegmentsService) *UserSegmentsHandler {
@@ -53,30 +56,37 @@ type SegmentsRequest struct {
 //	@Success        200                                                 "User segments have been successfully changed"
 //	@Router         /users/{id}/segments [patch]
 func (uss *UserSegmentsHandler) UpdateHandle(w http.ResponseWriter, r *http.Request) {
+	const fn = "UpdateHandle"
+
 	var (
 		err    error
 		userID int
 		sr     SegmentsRequest
 	)
 	if userID, err = strconv.Atoi(r.PathValue("id")); err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	if err = json.NewDecoder(r.Body).Decode(&sr); err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if err = uss.userSegments.Update(r.Context(), userID, sr.Add, sr.Remove); err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode("{ok:true}"); err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	slog.Info(fn, "handler", userSegmentsHandler, "success", sr)
 }
 
 // GetActiveHandle retrieves active segments for a user via HTTP request.
@@ -90,6 +100,8 @@ func (uss *UserSegmentsHandler) UpdateHandle(w http.ResponseWriter, r *http.Requ
 //	@Success        200     {array}     dto.SegmentResponse             "Array with active user segments received"
 //	@Router         /users/{id}/segments [get]
 func (uss *UserSegmentsHandler) GetActiveHandle(w http.ResponseWriter, r *http.Request) {
+	const fn = "GetActiveHandle"
+
 	var (
 		err      error
 		userID   int
@@ -97,19 +109,23 @@ func (uss *UserSegmentsHandler) GetActiveHandle(w http.ResponseWriter, r *http.R
 	)
 
 	if userID, err = strconv.Atoi(r.PathValue("id")); err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	if segments, err = uss.userSegments.GetActive(uss.ctx, userID); err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(segments); err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	slog.Info(fn, "handler", userSegmentsHandler, "success", segments)
 }
 
 // GetHistoryCSVHandle generates a CSV report and returns JSON with the download URL.
@@ -125,6 +141,8 @@ func (uss *UserSegmentsHandler) GetActiveHandle(w http.ResponseWriter, r *http.R
 //	@Success        200     {object}    dto.USHResponse "CSV-history is ready at the link"
 //	@Router         /users/{id}/segments/history [get]
 func (uss *UserSegmentsHandler) GetHistoryCSVHandle(w http.ResponseWriter, r *http.Request) {
+	const fn = "GetHistoryCSVHandle"
+
 	var (
 		err                 error
 		userID, year, month int
@@ -133,6 +151,7 @@ func (uss *UserSegmentsHandler) GetHistoryCSVHandle(w http.ResponseWriter, r *ht
 
 	userID, err = strconv.Atoi(r.PathValue("id"))
 	if err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -141,16 +160,19 @@ func (uss *UserSegmentsHandler) GetHistoryCSVHandle(w http.ResponseWriter, r *ht
 	yearStr := r.URL.Query().Get("year")
 	monthStr := r.URL.Query().Get("month")
 	if yearStr == "" || monthStr == "" {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", "missing year or month")
 		http.Error(w, "year and month parameters are required", http.StatusBadRequest)
 		return
 	}
 	year, err = strconv.Atoi(yearStr)
 	if err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, "invalid year", http.StatusBadRequest)
 		return
 	}
 	month, err = strconv.Atoi(monthStr)
 	if err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, "invalid month", http.StatusBadRequest)
 		return
 	}
@@ -158,6 +180,7 @@ func (uss *UserSegmentsHandler) GetHistoryCSVHandle(w http.ResponseWriter, r *ht
 	// Calling the method of forming CSV reports.
 	dURL, err = uss.userSegments.GetHistoryCSV(r.Context(), userID, year, month)
 	if err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -168,7 +191,9 @@ func (uss *UserSegmentsHandler) GetHistoryCSVHandle(w http.ResponseWriter, r *ht
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(map[string]string{"url": dURL}); err != nil {
+		slog.Error(fn, "handler", userSegmentsHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	slog.Info(fn, "handler", userSegmentsHandler, "success", dURL)
 }

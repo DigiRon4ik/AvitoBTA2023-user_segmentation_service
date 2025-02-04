@@ -4,6 +4,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"user_segmentation_service/internal/models"
@@ -24,6 +25,8 @@ type SegmentHandlers struct {
 	ctx      context.Context
 }
 
+var segmentHandler = "segment handler"
+
 // NewSegmentHandler initializes and returns a new SegmentHandlers instance.
 func NewSegmentHandler(ctx context.Context, ss segmentService) *SegmentHandlers {
 	return &SegmentHandlers{
@@ -43,16 +46,20 @@ func NewSegmentHandler(ctx context.Context, ss segmentService) *SegmentHandlers 
 //	@Success        201     {object}    dto.SegmentResponse                 "The segment has been successfully established"
 //	@Router         /segments [post]
 func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) {
+	const fn = "CreateHandle"
+
 	var (
 		err     error
 		segment *models.Segment
 	)
 
 	if err = json.NewDecoder(r.Body).Decode(&segment); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if err = sh.segments.Create(sh.ctx, segment); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -60,9 +67,11 @@ func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	if err = json.NewEncoder(w).Encode(segment); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	slog.Info(fn, "handler", segmentHandler, "success", segment)
 }
 
 // DeleteHandle handles the request for deleting a segment.
@@ -76,18 +85,22 @@ func (sh *SegmentHandlers) CreateHandle(w http.ResponseWriter, r *http.Request) 
 //	@Success        204                             "The segment with this slug has been successfully deleted"
 //	@Router         /segments/{slug} [delete]
 func (sh *SegmentHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) {
+	const fn = "DeleteHandle"
+
 	var (
 		err  error
 		slug = r.PathValue("slug")
 	)
 
 	if err = sh.segments.Delete(sh.ctx, slug); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
+	slog.Info(fn, "handler", segmentHandler, "success", slug)
 }
 
 // UpdateHandle handles the request for updating an existing segment.
@@ -102,6 +115,8 @@ func (sh *SegmentHandlers) DeleteHandle(w http.ResponseWriter, r *http.Request) 
 //	@Success        200     {object}    dto.SegmentResponse                 "The segment with this slogan has been changed"
 //	@Router         /segments/{slug} [put]
 func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) {
+	const fn = "UpdateHandle"
+
 	var (
 		err     error
 		slug    = r.PathValue("slug")
@@ -109,20 +124,24 @@ func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) 
 	)
 
 	if err = json.NewDecoder(r.Body).Decode(&segment); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	segment.Slug = slug
 	if err = sh.segments.Update(sh.ctx, segment); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(segment); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	slog.Info(fn, "handler", segmentHandler, "success", segment)
 }
 
 // GetHandle handles the request for retrieving a single segment by its slug.
@@ -136,6 +155,8 @@ func (sh *SegmentHandlers) UpdateHandle(w http.ResponseWriter, r *http.Request) 
 //	@Success        200     {object}    dto.SegmentResponse     "A segment with such a slogan was obtained"
 //	@Router         /segments/{slug} [get]
 func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
+	const fn = "GetHandle"
+
 	var (
 		err     error
 		slug    = r.PathValue("slug")
@@ -143,6 +164,7 @@ func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if segment, err = sh.segments.GetBySlug(sh.ctx, slug); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -150,9 +172,11 @@ func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(segment); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	slog.Info(fn, "handler", segmentHandler, "success", segment)
 }
 
 // GetAllHandle handles the request for retrieving all segments.
@@ -165,19 +189,24 @@ func (sh *SegmentHandlers) GetHandle(w http.ResponseWriter, r *http.Request) {
 //	@Success        200     {array}    dto.SegmentResponse     "An array of segments was obtained"
 //	@Router         /segments [get]
 func (sh *SegmentHandlers) GetAllHandle(w http.ResponseWriter, _ *http.Request) {
+	const fn = "GetAllHandle"
+
 	var (
 		err      error
 		segments []*models.Segment
 	)
 
 	if segments, err = sh.segments.GetAll(sh.ctx); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(segments); err != nil {
+		slog.Error(fn, "handler", segmentHandler, "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	slog.Info(fn, "handler", segmentHandler, "success", segments)
 }
