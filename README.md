@@ -28,7 +28,7 @@ cd AvitoBTA2023-user_segmentation_service
 > [!TIP]
 > If you don't change the source code, when the service is raised, the builder container will work with cache, skipping capacitive processes.
 
-#### 🟢 **(Docker) Start/Stop:**
+#### 🟢 **Docker | Start/Stop:**
 - 🚀
   ```
   docker-compose up -d
@@ -37,7 +37,7 @@ cd AvitoBTA2023-user_segmentation_service
   ```
   docker-compose down
   ```
-#### 🟢 **(Make) Start/Stop:**
+#### 🟢 **Make | Start/Stop:**
 - 🚀
   ```
   make up
@@ -61,11 +61,11 @@ cd AvitoBTA2023-user_segmentation_service
 
 ### — _APIs:_
 - **[Postman](https://www.postman.com/downloads/)**
-  - You can import a _JSON-file_ from the _API_ into _Postman_ for testing.
+  - You can import a [_JSON-file_](avitobta2023-user_segmentation_service.postman_collection.json) from the _API_ into _Postman_ for testing.
 - **[Swagger UI](https://swagger.io/solutions/api-design/)**
   - Or use the _Swagger UI_ at [localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html) after starting the service.
 - **[Miro](https://miro.com/)**
-  - Or for Russian-speakers you can see clearly in the _Miro_ (clickable picture)
+  - Or for Russian-speakers you can see clearly in the _Miro_ (_clickable img_)
 <p align="center">
   <a href="https://miro.com/app/live-embed/uXjVLmR3zL4=/?moveToViewport=-733,1765,7428,9330&embedId=989809006064">
     <img width=400 src="https://i.imgur.com/nfXc81A.png" >
@@ -105,6 +105,12 @@ cd AvitoBTA2023-user_segmentation_service
 
 </div>
 
+<p align="center">
+  <a href="https://i.imgur.com/uP3zxzv.png">
+    <img width=800 src="https://i.imgur.com/uP3zxzv.png" >
+  </a>
+</p>
+
 ---
 
 ### — _DataBase Schema:_
@@ -120,7 +126,7 @@ cd AvitoBTA2023-user_segmentation_service
 
 <div align="center">
 
-| Задача  | Прогресс | Комментарий |
+| Task    | Progress | Comment     |
 |:--------|:--------:|:------------|
 | **Segment creation method** | ✅ | - |
 | **Segment deletion method** | ✅ | - |
